@@ -6,6 +6,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Status struct {
+	Id     int    `gorm:"AUTO_INCREMENT" form:"id" json:"id"`
+	Name   string `gorm:"not null" form:"name" json:"name"`
+	Color  string `gorm:"not null" form:"color" json:"color"`
+}
+
 type Events struct {
 	Id           int    `gorm:"AUTO_INCREMENT" form:"id" json:"id"`
 	Name         string `gorm:"not null" form:"name" json:"name"`
@@ -14,7 +20,7 @@ type Events struct {
 
 func InitDb() *gorm.DB {
 	// Openning file
-	db, err := gorm.Open("sqlite3", "../data.db")
+	db, err := gorm.Open("sqlite3", "./data.db")
 	// Display SQL queries
 	db.LogMode(true)
 
@@ -50,6 +56,8 @@ func main() {
 		v1.GET("/events/:id", GetEvent)
 		v1.PUT("/events/:id", UpdateEvent)
 		v1.DELETE("/events/:id", DeleteEvent)
+		v1.OPTIONS("/events", OptionsEvent)      // POST
+		v1.OPTIONS("/events/:id", OptionsEvent)  // PUT, DELETE
 	}
 
 	r.Run(":8080")
@@ -71,6 +79,8 @@ func PostEvent(c *gin.Context) {
 		// Display error
 		c.JSON(422, gin.H{"error": "Fields are empty"})
 	}
+
+	// http --form POST :8080/api/v1/events name="My Event" description="My Description"
 }
 
 func GetEvents(c *gin.Context) {
@@ -86,6 +96,7 @@ func GetEvents(c *gin.Context) {
 	// Display JSON result
 	c.JSON(200, events)
 
+	// http :8080/api/v1/events
 }
 
 func GetEvent(c *gin.Context) {
@@ -106,6 +117,8 @@ func GetEvent(c *gin.Context) {
 		// Display JSON error
 		c.JSON(404, gin.H{"error": "Event not found"})
 	}
+
+	// http :8080/api/v1/events/1
 }
 
 func UpdateEvent(c *gin.Context) {
@@ -145,6 +158,8 @@ func UpdateEvent(c *gin.Context) {
 		// Display JSON error
 		c.JSON(422, gin.H{"error": "Fields are empty"})
 	}
+
+	// http PUT :8080/api/v1/events/1  name="My Event Updated" description="My Description Updated"
 }
 
 func DeleteEvent(c *gin.Context) {
@@ -168,6 +183,8 @@ func DeleteEvent(c *gin.Context) {
 		// Display JSON error
 		c.JSON(404, gin.H{"error": "Event not found"})
 	}
+
+	// http DELETE :8080/api/v1/events/1
 }
 
 func OptionsEvent(c *gin.Context) {
