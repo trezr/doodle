@@ -43,7 +43,7 @@ func main() {
 	i := Impl{}
 	i.InitDB()
   i.InitSchema()
-  //defer i.Close()
+  defer i.Close()
 
 	r := gin.Default()
 

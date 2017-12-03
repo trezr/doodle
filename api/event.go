@@ -10,16 +10,16 @@ import (
 type Event struct {
   gorm.Model
 
-  Name            string          `json:"name" binding:"required"`
-  Date            time.Time       `json:"date" binding:"required"`
+  Name            string          `form:"name" binding:"required"`
+  Date            time.Time       `form:"date" binding:"required" time_format:"02/01/2006 15:04"`
 
   Status          Status
-  StatusID        int             `json:"status-id" binding:"required"`
+  StatusID        int             `form:"status-id" binding:"required"`
 
   Participations  []Participation
 }
 
-// http --form POST :8080/api/v1/events name="My Event" description="My Description"
+// http --form POST :8080/api/v1/events name="My Event" date="12/05/1993 12:04" status-id="1"
 func (i *Impl) PostEvent(c *gin.Context) {
 	var event Event
   if err := c.Bind(&event); err == nil {

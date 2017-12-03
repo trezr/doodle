@@ -11,3 +11,6 @@ type Status struct {
   Color string
 }
 
+func (Status) TableName() string {
+  return "status"
+}
